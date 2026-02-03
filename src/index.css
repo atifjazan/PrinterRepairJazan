@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primary Brand - Industrial Blue */
+  --color-primary: 217 91% 50%;
+  --color-brand: 217 91% 45%;
+  --color-emphasis: 142 76% 42%;
+
+  /* Text Hierarchy */
+  --text-default: 222 47% 11%;
+  --text-subtle: 215 19% 35%;
+  --text-muted: 215 16% 55%;
+
+  /* Backgrounds */
+  --bg-base: 210 20% 98%;
+  --bg-elevated: 0 0% 100%;
+  --bg-overlay: 222 47% 11%;
+
+  /* Semantic Status */
+  --semantic-success: 142 76% 36%;
+  --semantic-warning: 38 92% 50%;
+  --semantic-error: 0 84% 60%;
+  --semantic-info: 217 91% 60%;
+
+  /* Surfaces */
+  --surface-muted: 214 32% 91%;
+  --border-default: 214 32% 85%;
+  --border-subtle: 214 32% 91%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-base text-default font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight text-balance;
+  }
+
+  p {
+    @apply text-pretty;
+  }
+}
+
+@layer utilities {
+  .bg-base {
+    background-color: hsl(var(--bg-base));
+  }
+  
+  .bg-elevated {
+    background-color: hsl(var(--bg-elevated));
+  }
+  
+  .text-default {
+    color: hsl(var(--text-default));
+  }
+  
+  .text-subtle {
+    color: hsl(var(--text-subtle));
+  }
+  
+  .text-muted {
+    color: hsl(var(--text-muted));
+  }
+  
+  .text-primary {
+    color: hsl(var(--color-primary));
+  }
+  
+  .text-emphasis {
+    color: hsl(var(--color-emphasis));
+  }
+  
+  .bg-primary {
+    background-color: hsl(var(--color-primary));
+  }
+  
+  .border-default {
+    border-color: hsl(var(--border-default));
+  }
+
+  .thermal-label {
+    width: 80mm;
+    font-family: 'IBM Plex Mono', monospace;
+    background: white;
+    padding: 8mm;
+  }
+
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    
+    .print-only {
+      display: block !important;
+    }
+    
+    body {
+      background: white;
+    }
+    
+    .thermal-label {
+      page-break-after: always;
+      margin: 0;
+      padding: 4mm;
+      border: none;
+      box-shadow: none;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 55%;
+    --accent: 142 76% 42%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 85%;
+    --input: 214 32% 85%;
+    --ring: 217 91% 50%;
+    --radius: 0.5rem;
+  }
+}
