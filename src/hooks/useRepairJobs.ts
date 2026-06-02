@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RepairJob } from '@/types';
-import { getJobs, saveJobs, addJob, updateJob, deleteJob } from '@/lib/storage';
+import { getJobs, addJob, updateJob, deleteJob, upsertJobs, ImportResult } from '@/lib/storage';
 
 export const useRepairJobs = () => {
   const [jobs, setJobs] = useState<RepairJob[]>([]);
@@ -39,6 +39,12 @@ export const useRepairJobs = () => {
     setJobs(loadedJobs);
   }, []);
 
+  const importJobs = useCallback((importedJobs: Partial<RepairJob>[]): ImportResult => {
+    const result = upsertJobs(importedJobs);
+    setJobs(getJobs());
+    return result;
+  }, []);
+
   return {
     jobs,
     isLoading,
@@ -46,5 +52,6 @@ export const useRepairJobs = () => {
     editJob,
     removeJob,
     refreshJobs,
+    importJobs,
   };
 };

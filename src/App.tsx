@@ -6,13 +6,15 @@ import { RepairForm } from '@/components/forms/RepairForm';
 import { JobsTable } from '@/components/features/JobsTable';
 import { StatsCards } from '@/components/features/StatsCards';
 import { ThermalLabel } from '@/components/features/ThermalLabel';
+import { CustomerHistory } from '@/components/features/CustomerHistory';
 import { Input } from '@/components/ui/input';
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Wrench } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search, Wrench, Users } from 'lucide-react';
 
 function App() {
-  const { jobs, createJob, editJob, removeJob } = useRepairJobs();
+  const { jobs, createJob, editJob, removeJob, importJobs } = useRepairJobs();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJob, setSelectedJob] = useState<RepairJob | null>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
@@ -55,51 +57,83 @@ function App() {
     });
   };
 
+  const handleImport = (importedJobs: Partial<RepairJob>[]) => {
+    const result = importJobs(importedJobs);
+    return {
+      added: result.added,
+      updated: result.updated,
+      unchanged: result.unchanged,
+    };
+  };
+
   return (
     <div className="min-h-screen bg-base">
       <Header />
-      
+
       <main className="p-6">
         <div className="max-w-[1600px] mx-auto space-y-6">
           {/* Stats Overview */}
           <StatsCards jobs={jobs} />
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Form Section */}
-            <div className="lg:col-span-4">
-              <RepairForm onSubmit={handleAddJob} />
-            </div>
+          {/* Tabs */}
+          <Tabs defaultValue="active" className="w-full">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="active" className="flex items-center gap-2">
+                <Wrench className="size-4" />
+                Active Jobs
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex items-center gap-2">
+                <Users className="size-4" />
+                Customer History
+              </TabsTrigger>
+            </TabsList>
 
-            {/* Jobs List Section */}
-            <div className="lg:col-span-8 space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <Wrench className="size-5 text-primary" />
-                  <h2 className="text-lg font-semibold">Repair Jobs</h2>
-                  <span className="text-sm text-muted-foreground">
-                    ({filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'})
-                  </span>
+            {/* Active Jobs Tab */}
+            <TabsContent value="active" className="mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="lg:col-span-4">
+                  <RepairForm onSubmit={handleAddJob} />
                 </div>
-                <div className="relative w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search jobs..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    className="pl-9"
+
+                <div className="lg:col-span-8 space-y-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2">
+                      <Wrench className="size-5 text-primary" />
+                      <h2 className="text-lg font-semibold">Repair Jobs</h2>
+                      <span className="text-sm text-muted-foreground">
+                        ({filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'})
+                      </span>
+                    </div>
+                    <div className="relative w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search jobs..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                  </div>
+
+                  <JobsTable
+                    jobs={filteredJobs}
+                    onPrintLabel={handlePrintLabel}
+                    onDelete={handleDelete}
+                    onStatusChange={handleStatusChange}
                   />
                 </div>
               </div>
+            </TabsContent>
 
-              <JobsTable
-                jobs={filteredJobs}
+            {/* Customer History Tab */}
+            <TabsContent value="history" className="mt-6">
+              <CustomerHistory
+                jobs={jobs}
                 onPrintLabel={handlePrintLabel}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
+                onImport={handleImport}
               />
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 
