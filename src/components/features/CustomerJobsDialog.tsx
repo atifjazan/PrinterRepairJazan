@@ -30,6 +30,7 @@ import {
   Monitor,
   Laptop,
   PrinterIcon,
+  AlertCircle,
 } from 'lucide-react';
 
 interface CustomerJobsDialogProps {
@@ -107,6 +108,29 @@ export const CustomerJobsDialog = ({
               {customer.totalJobs}
             </div>
           </div>
+          <div
+            className={`rounded-lg p-3 border ${
+              customer.outstandingBalance > 0
+                ? 'bg-red-50 border-red-200'
+                : 'bg-slate-50 border-slate-200'
+            }`}
+          >
+            <div
+              className={`flex items-center gap-2 text-xs font-medium ${
+                customer.outstandingBalance > 0 ? 'text-red-700' : 'text-slate-700'
+              }`}
+            >
+              <AlertCircle className="size-3.5" />
+              Outstanding
+            </div>
+            <div
+              className={`text-2xl font-bold mt-1 ${
+                customer.outstandingBalance > 0 ? 'text-red-900' : 'text-slate-900'
+              }`}
+            >
+              {formatCurrency(customer.outstandingBalance)}
+            </div>
+          </div>
           <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
             <div className="flex items-center gap-2 text-emerald-700 text-xs font-medium">
               <TrendingUp className="size-3.5" />
@@ -124,17 +148,14 @@ export const CustomerJobsDialog = ({
             <div className="text-lg font-bold text-amber-900 mt-1">
               {customer.lastVisit}
             </div>
-          </div>
-          <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
-            <div className="text-xs font-medium text-slate-700">Status</div>
             <div className="flex gap-1 mt-1.5 flex-wrap">
               {customer.pendingCount > 0 && (
-                <Badge variant="outline" className="bg-yellow-50 text-yellow-800 text-xs">
+                <Badge variant="outline" className="bg-yellow-50 text-yellow-800 text-[10px] px-1.5 py-0">
                   {customer.pendingCount} active
                 </Badge>
               )}
               {customer.completedCount > 0 && (
-                <Badge variant="outline" className="bg-green-50 text-green-800 text-xs">
+                <Badge variant="outline" className="bg-green-50 text-green-800 text-[10px] px-1.5 py-0">
                   {customer.completedCount} done
                 </Badge>
               )}

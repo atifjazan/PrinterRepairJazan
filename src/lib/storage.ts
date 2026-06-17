@@ -371,6 +371,7 @@ export interface CustomerSummary {
   lastVisit: string;
   pendingCount: number;
   completedCount: number;
+  outstandingBalance: number;
 }
 
 export const groupJobsByCustomer = (jobs: RepairJob[]): CustomerSummary[] => {
@@ -389,6 +390,7 @@ export const groupJobsByCustomer = (jobs: RepairJob[]): CustomerSummary[] => {
         lastVisit: job.repairDate,
         pendingCount: 0,
         completedCount: 0,
+        outstandingBalance: 0,
       });
     }
     const summary = map.get(key)!;
@@ -404,7 +406,17 @@ export const groupJobsByCustomer = (jobs: RepairJob[]): CustomerSummary[] => {
     if (job.status === 'completed' || job.status === 'delivered') {
       summary.completedCount++;
     }
+    // Outstanding = amount owed for jobs not yet delivered (pending / in-progress / completed)
+    if (job.status !== 'delivered') {
+      summary.outstandingBalance += job.amountCharged;
+    }
   }
 
-  return Array.from(map.values()).sort((a, b) => b.lastVisit.localeCompare(a.lastVisit));
+  // Sort by outstanding balance high-to-low, then by last visit descending
+  return Array.from(map.values()).sort((a, b) => {
+    if (b.outstandingBalance !== a.outstandingBalance) {
+      return b.outstandingBalance - a.outstandingBalance;
+    }
+    return b.lastVisit.localeCompare(a.lastVisit);
+  });
 };

@@ -17,6 +17,8 @@ import {
   Calendar,
   ClipboardList,
   ChevronRight,
+  AlertCircle,
+  ArrowDownWideNarrow,
 } from 'lucide-react';
 import { exportToCSV, downloadCSV } from '@/lib/storage';
 
@@ -36,6 +38,11 @@ export const CustomerHistory = ({ jobs, onPrintLabel, onImport }: CustomerHistor
   const filteredCustomers = customers.filter(c =>
     c.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.mobile.includes(searchQuery)
+  );
+
+  const totalOutstanding = filteredCustomers.reduce(
+    (sum, c) => sum + c.outstandingBalance,
+    0
   );
 
   const handleExport = () => {
@@ -58,12 +65,28 @@ export const CustomerHistory = ({ jobs, onPrintLabel, onImport }: CustomerHistor
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Users className="size-5 text-primary" />
-          <h2 className="text-lg font-semibold">Customer History</h2>
+          <h2 className="text-lg font-semibold">Customer Accounts</h2>
           <span className="text-sm text-muted-foreground">
             ({filteredCustomers.length} {filteredCustomers.length === 1 ? 'customer' : 'customers'})
           </span>
+          <Badge
+            variant="outline"
+            className="bg-amber-50 text-amber-800 border-amber-200 text-xs gap-1"
+          >
+            <ArrowDownWideNarrow className="size-3" />
+            Sorted by outstanding balance
+          </Badge>
+          {totalOutstanding > 0 && (
+            <Badge
+              variant="outline"
+              className="bg-red-50 text-red-800 border-red-200 text-xs gap-1"
+            >
+              <AlertCircle className="size-3" />
+              Total Outstanding: {formatCurrency(totalOutstanding)}
+            </Badge>
+          )}
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -123,6 +146,32 @@ export const CustomerHistory = ({ jobs, onPrintLabel, onImport }: CustomerHistor
                     </div>
                   </div>
                   <ChevronRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                </div>
+
+                <div
+                  className={`rounded-lg p-3 mb-3 border ${
+                    customer.outstandingBalance > 0
+                      ? 'bg-red-50 border-red-200'
+                      : 'bg-slate-50 border-slate-200'
+                  }`}
+                >
+                  <div
+                    className={`text-xs font-medium flex items-center gap-1 ${
+                      customer.outstandingBalance > 0 ? 'text-red-700' : 'text-slate-600'
+                    }`}
+                  >
+                    <AlertCircle className="size-3" />
+                    Outstanding Balance
+                  </div>
+                  <div
+                    className={`text-xl font-bold truncate mt-0.5 ${
+                      customer.outstandingBalance > 0
+                        ? 'text-red-900'
+                        : 'text-slate-700'
+                    }`}
+                  >
+                    {formatCurrency(customer.outstandingBalance)}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
